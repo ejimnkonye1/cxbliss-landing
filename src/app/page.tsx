@@ -30,11 +30,52 @@ import {
   UserCheck,
   Building2,
   Rocket,
+  MoreVerticalIcon,
 } from "lucide-react";
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [navOpen, setNavOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setMessage(null);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      subject: formData.get("subject"),
+      message: formData.get("message"),
+    };
+
+    try {
+      const response = await fetch("https://email-green-chi.vercel.app/api/v1/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setMessage("Thank you! We've received your inquiry and will contact you within 24 hours.");
+        (event.target as HTMLFormElement).reset();
+      } else {
+        setError(result.error || "Failed to submit form. Please try again.");
+      }
+    } catch {
+      setError("Failed to submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -95,7 +136,7 @@ export default function Home() {
           </a>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -111,10 +152,10 @@ export default function Home() {
             >
               Enroll Now
             </a>
-          </div>
+          </div> */}
 
           {/* Mobile Menu Button */}
-          <button
+          {/* <button
             onClick={() => setNavOpen(!navOpen)}
             className="md:hidden text-white p-2"
             aria-label="Toggle menu"
@@ -136,10 +177,11 @@ export default function Home() {
                 }`}
               />
             </div>
-          </button>
+          </button> */}
         </div>
 
         {/* Mobile Menu */}
+{/*         
         {navOpen && (
           <div className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-white/5 animate-fade-in">
             <div className="px-5 py-4 flex flex-col gap-3">
@@ -162,20 +204,18 @@ export default function Home() {
               </a>
             </div>
           </div>
-        )}
+        )} */}
       </nav>
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 pt-32 pb-28 text-center text-white hero-grid">
         <div className="radial-glow absolute inset-0 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-5 relative">
-          <div className="animate-fade-in-up">
-            <span className="inline-flex items-center gap-2 bg-blue-600/10 text-blue-400 px-5 py-2 rounded-full text-sm font-medium mb-8 border border-blue-500/20">
-              <Sparkles className="w-4 h-4" />
-              CX FUNDAMENTALS MENTORSHIP COHORT
-            </span>
-          </div>
 
+        <h1 className="text-4xl  font-extrabold mb-6  text-blue-400 leading-[1.1] tracking-tight animate-fade-in-up animation-delay-100">
+          CX FUNDAMENTALS MENTORSHIP COHORT
+      
+          </h1>
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-6 leading-[1.1] tracking-tight animate-fade-in-up animation-delay-100">
             Build CX skills leaders trust
             <br />
@@ -206,19 +246,16 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up animation-delay-400">
-            <a
-              href="#enroll"
-              className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-600/30 animate-pulse-glow"
-            >
-              Enroll Now
-              <ArrowRight className="w-5 h-5" />
-            </a>
-            <a
-              href="#program"
-              className="inline-flex items-center justify-center gap-2 bg-white/5 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all border border-white/10"
-            >
-              Learn More
-            </a>
+     <a
+  href="https://api.whatsapp.com/send/?phone=2347064512064&text=Hi%20CXBliss%2C%0AI%27m%20interested%20in%20the%20CX%20Fundamentals%20Mentorship%20Cohort%20and%20would%20like%20to%20learn%20more.&type=phone_number&app_absent=0"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg shadow-green-600/30 animate-pulse-glow"
+>
+  Message us to learn more
+  <ArrowRight className="w-5 h-5" />
+</a>
+        
           </div>
 
           {/* Trust indicators */}
@@ -250,10 +287,10 @@ export default function Home() {
             <span className="text-blue-600 font-semibold text-sm tracking-wider uppercase">
               The Challenge
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mt-3 mb-4 leading-tight">
+            {/* <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mt-3 mb-4 leading-tight">
               Customer Experience Is a{" "}
               <span className="text-blue-600">Leadership Skill</span>
-            </h2>
+            </h2> */}
             <p className="text-lg text-gray-500 mb-14">
               Most organizations talk about CX but struggle to execute it.
             </p>
@@ -291,12 +328,17 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-14 text-center">
-            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 px-10 py-5 rounded-2xl shadow-lg shadow-blue-600/20">
-              <Sparkles className="w-5 h-5 text-blue-200" />
-              <p className="text-white text-lg font-bold">
-                This program fixes that.
-              </p>
-            </div>
+   <a
+  href="https://api.whatsapp.com/send/?phone=2347064512064&text=Hi%20CXBliss%2C%0AI%27m%20interested%20in%20the%20CX%20Fundamentals%20Mentorship%20Cohort%20and%20would%20like%20to%20learn%20more.&type=phone_number&app_absent=0"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-green-700 px-10 py-5 rounded-2xl shadow-lg shadow-green-600/20 hover:shadow-green-600/30 transition-all hover:-translate-y-0.5"
+>
+ 
+  <p className="text-white text-lg font-bold">
+    Message us on WhatsApp to learn more
+  </p>
+</a>
           </div>
         </div>
       </section>
@@ -355,14 +397,14 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <div className="mt-14 text-center p-8 bg-blue-600/10 rounded-2xl border border-blue-500/20 max-w-3xl mx-auto">
-            <p className="text-lg md:text-xl leading-relaxed">
-              By the end of 6 weeks, you won&apos;t just &quot;know CX&quot; —
-              you will know how to{" "}
-              <strong className="text-blue-400">use it</strong> in real business
-              situations.
-            </p>
-          </div>
+  <div className="mt-14 text-center p-8 mx-auto">
+  <p className="text-lg md:text-xl leading-relaxed">
+    By the end of 6 weeks, you won&apos;t just &quot;know CX&quot;
+    you will know how to{" "}
+    <strong className="text-blue-400">use it</strong> in real business
+    situations.
+  </p>
+</div>
         </div>
       </section>
 
@@ -402,6 +444,10 @@ export default function Home() {
                 icon: MessagesSquare,
                 text: "Lead CX conversations with confidence",
               },
+                   {
+                icon: MoreVerticalIcon,
+                text: "And Many More",
+              },
             ].map((item, index) => (
               <div
                 key={index}
@@ -423,13 +469,15 @@ export default function Home() {
             </p>
           </div>
           <div className="text-center mt-10">
-            <a
-              href="#enroll"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-600/25"
-            >
-              Join the Cohort
-              <ArrowRight className="w-5 h-5" />
-            </a>
+     <a
+  href="https://api.whatsapp.com/send/?phone=2347064512064&text=Hi%20CXBliss%2C%0AI%27m%20interested%20in%20the%20CX%20Fundamentals%20Mentorship%20Cohort%20and%20would%20like%20to%20learn%20more.&type=phone_number&app_absent=0"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center gap-2 bg-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all hover:-translate-y-0.5 shadow-lg shadow-green-600/25"
+>
+  Join the Cohort
+  <ArrowRight className="w-5 h-5" />
+</a>
           </div>
         </div>
       </section>
@@ -485,7 +533,7 @@ export default function Home() {
             ))}
           </div>
           <p className="text-center mt-14 text-xl font-bold text-gray-900">
-            If CX is part of your responsibility,{" "}
+            If Customer Experience is part of your responsibility,{" "}
             <span className="text-blue-600">this program fits.</span>
           </p>
         </div>
@@ -556,10 +604,9 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <p className="text-center mt-12 p-6 bg-blue-50 rounded-xl text-gray-600 italic max-w-2xl mx-auto border border-blue-100">
-            These are skills that compound across roles, industries, and
-            leadership levels.
-          </p>
+  <p className="text-center mt-12 p-6 mx-auto text-gray-600 italic max-w-2xl">
+  "And many more skills that compound across roles, industries and leadership levels"
+</p>
         </div>
       </section>
 
@@ -604,7 +651,7 @@ export default function Home() {
               {
                 icon: Users,
                 title: "CXBliss Alumni Community",
-                desc: "Ongoing access to peers and resources",
+                desc: "Professional access to opportunities and resources",
               },
             ].map((item, index) => (
               <div
@@ -639,9 +686,9 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mt-3 mb-4">
               Why CXBliss
             </h2>
-            <p className="text-lg text-gray-500 max-w-xl mx-auto">
+            {/* <p className="text-lg text-gray-500 max-w-xl mx-auto">
               This is not another online course. It is:
-            </p>
+            </p> */}
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -713,13 +760,16 @@ export default function Home() {
               Early Bird Offer &mdash; Limited Time
             </span>
             <div>
+         
               <a
-                href="#"
-                className="inline-flex items-center justify-center gap-2 bg-white text-blue-700 px-14 py-4 rounded-xl font-bold text-lg hover:-translate-y-0.5 transition-all shadow-xl hover:shadow-2xl w-full sm:w-auto"
-              >
-                Enroll Now
-                <ArrowRight className="w-5 h-5" />
-              </a>
+  href="https://api.whatsapp.com/send/?phone=2347064512064&text=Hi%20CXBliss%2C%0AI%27m%20interested%20in%20the%20CX%20Fundamentals%20Mentorship%20Cohort%20and%20would%20like%20to%20learn%20more.&type=phone_number&app_absent=0"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-14 py-4 rounded-xl font-bold text-lg hover:-translate-y-0.5 transition-all shadow-xl hover:shadow-2xl w-full sm:w-auto hover:bg-green-700"
+>
+  Message us on WhatsApp
+  <ArrowRight className="w-5 h-5" />
+</a>
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-blue-100">
               <div className="flex items-center gap-1.5">
@@ -728,7 +778,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Alumni Access</span>
+                <span>Lifetime Alumni Access</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" />
@@ -742,22 +792,26 @@ export default function Home() {
           </p>
           <div className="mt-12 pt-8 border-t border-white/20 max-w-lg mx-auto">
             <p className="mb-5 text-blue-100">Still unsure?</p>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <a
-                href="#"
-                className="bg-white/10 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all flex items-center gap-2 border border-white/10"
-              >
-                <MessageCircle className="w-5 h-5" />
-                Chat on WhatsApp
-              </a>
-              <a
-                href="#"
-                className="bg-white/10 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all flex items-center gap-2 border border-white/10"
-              >
-                <Calendar className="w-5 h-5" />
-                Book Free Consultation
-              </a>
-            </div>
+    <div className="flex gap-4 justify-center flex-wrap">
+  <a
+    href="https://api.whatsapp.com/send/?phone=2347064512064&text=Hi%20CXBliss%2C%0AI%27m%20interested%20in%20the%20CX%20Fundamentals%20Mentorship%20Cohort%20and%20would%20like%20to%20learn%20more.&type=phone_number&app_absent=0"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-white/10 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all flex items-center gap-2 border border-white/10"
+  >
+    <MessageCircle className="w-5 h-5" />
+    Chat on WhatsApp
+  </a>
+  <a
+    href="https://calendly.com/cxblissteam/cxbliss-introductory-call?month=2026-02"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-white/10 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all flex items-center gap-2 border border-white/10"
+  >
+    <Calendar className="w-5 h-5" />
+    Book Free Consultation
+  </a>
+</div>
           </div>
         </div>
       </section>
@@ -806,58 +860,126 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-gray-950 text-white text-center">
-        <div className="max-w-3xl mx-auto px-5">
+    <section className="py-20 bg-gray-950 text-white">
+      <div className="max-w-4xl mx-auto px-5">
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
             Ready to Build CX Skills That Matter?
           </h2>
           <p className="text-gray-400 text-lg mb-8">
-            Join the next cohort and start your journey toward becoming a
-            confident CX professional.
+            Fill out the form below and we'll send you complete details about the CX Fundamentals Mentorship Cohort.
           </p>
-          <a
-            href="#enroll"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-12 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-600/30"
-          >
-            Enroll Now
-            <ArrowRight className="w-5 h-5" />
-          </a>
         </div>
-      </section>
+
+        <form onSubmit={handleSubmit} className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 md:p-10 rounded-2xl border border-gray-700/50">
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block text-gray-300 mb-2 font-medium">Full Name *</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="John Doe"
+                className="w-full p-4 rounded-xl bg-gray-800/50 text-white border border-gray-700 focus:border-blue-500 focus:outline-none transition-colors"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 mb-2 font-medium">Email Address *</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="john@example.com"
+                className="w-full p-4 rounded-xl bg-gray-800/50 text-white border border-gray-700 focus:border-blue-500 focus:outline-none transition-colors"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 mb-2 font-medium">Phone Number</label>
+              <input
+                type="tel"
+                name="phone"
+                placeholder="+1 (555) 123-4567"
+                className="w-full p-4 rounded-xl bg-gray-800/50 text-white border border-gray-700 focus:border-blue-500 focus:outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 mb-2 font-medium">Company / Organization</label>
+              <input
+                type="text"
+                name="subject"
+                placeholder="Current or aspiring company"
+                className="w-full p-4 rounded-xl bg-gray-800/50 text-white border border-gray-700 focus:border-blue-500 focus:outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-2 font-medium">What would you like to learn about the CX Cohort? *</label>
+            <textarea
+              name="message"
+              placeholder="Tell us about your CX experience, goals, and any specific questions you have about the program..."
+              rows={4}
+              className="w-full p-4 rounded-xl bg-gray-800/50 text-white border border-gray-700 focus:border-blue-500 focus:outline-none transition-colors resize-none"
+              required
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-12 py-4 rounded-xl font-bold text-lg transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              "Sending..."
+            ) : (
+              <>
+                Get Complete Program Details
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+
+          {message && (
+            <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+              <p className="text-green-400">{message}</p>
+            </div>
+          )}
+          {error && (
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+              <p className="text-red-400">{error}</p>
+            </div>
+          )}
+        </form>
+      </div>
+    </section>
+
 
       {/* Footer */}
-      <footer className="bg-gray-950 border-t border-white/5 text-white py-12">
-        <div className="max-w-7xl mx-auto px-5">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <Image
-                src={logo}
-                alt="CXBliss Logo"
-                width={36}
-                height={36}
-                className="rounded-lg"
-              />
-              <span className="text-xl font-extrabold tracking-tight">
-                CX<span className="text-blue-500">Bliss</span>
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="hover:text-white transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-            <p className="text-gray-500 text-sm">
-              &copy; 2026 CXBliss. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+  <footer className="bg-gray-950 border-t border-white/5 text-white py-12">
+  <div className="max-w-7xl mx-auto px-5">
+    <div className="flex flex-col items-center gap-8">
+      {/* Centered Logo */}
+      <div className="flex items-center gap-3">
+        <Image
+          src={logo}
+          alt="CXBliss Logo"
+          width={40}
+          height={40}
+          className="rounded-lg"
+        />
+        <span className="text-2xl font-extrabold tracking-tight">
+          CX<span className="text-blue-500">Bliss</span>
+        </span>
+      </div>
+
+
+      {/* Copyright */}
+      <p className="text-gray-500 text-sm mt-4">
+        &copy; 2026 CXBliss. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
     </main>
   );
 }
